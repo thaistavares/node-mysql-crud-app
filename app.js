@@ -8,8 +8,8 @@ const path = require('path');
 const dotenv = require('dotenv');
 dotenv.config();
 
-const {getHomePage} = require('./routes/index');
-const {addPlayerPage, addPlayer, deletePlayer, editPlayer, editPlayerPage} = require('./routes/player');
+const homeRoutes = require('./routes/index.routes');
+const playerRoutes = require('./routes/player.routes');
 
 const port = 3000;
 const db = mysql.createConnection({
@@ -36,12 +36,16 @@ app.use(express.urlencoded({
 app.use(express.json());
 app.use(express.static(path.join(__dirname,'public')));
 app.use(fileUpload());
-app.get('/',getHomePage);
-app.get('/add',addPlayerPage);
-app.get('/edit/:id', editPlayerPage);
-app.get('/delete/:id', deletePlayer);
-app.post('/add', addPlayer);
-app.post('/edit/:id', editPlayer);
+
+app.use('/',homeRoutes);
+app.use('/player',playerRoutes);
+app.get('*', (req,res,next) => {
+    res.status(404);
+    res.render('404.ejs', {
+        title: 'Page Not Found'
+    });
+});
+
 app.listen(port, () => {
     console.log(`Server running on port: ${port}`);
 });
