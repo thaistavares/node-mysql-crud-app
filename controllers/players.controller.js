@@ -1,13 +1,13 @@
 const fs = require('fs');
 
-module.exports = {
-    addPlayerPage: (req, res) => {
+exports.addPlayerPage = (req, res) => {
         res.render('add-player.ejs', {
             title: 'Welcome to Socka | Add a new player',
             message: ''
         });
-    },
-    addPlayer: (req, res) => {
+    };
+
+    exports.addPlayer = (req, res) => {
         if (!req.files) {
             return res.status(400).send("No files were uploaded.")
         }
@@ -17,7 +17,7 @@ module.exports = {
         const position = req.body.position;
         const number = req.body.number;
         const username = req.body.username;
-        const uploadedFile = req.filmes.image;
+        const uploadedFile = req.files.image;
         const fileExtension = uploadedFile.mimetype.split('/')[1];
         const image_name = username + '.' + fileExtension;
         const usernameQuery = "SELECT * FROM `players` WHERE user_name = '" + username + "'";
@@ -44,21 +44,22 @@ module.exports = {
                         db.query(query, (err, result) => {
                             if (err) {
                                 return res.status(500).send(err);
-                            }
+                             }
                             res.redirect('/');
                         });
                     });
                 } else {
                     message = "Invalid file format. Only 'gif', 'jpg' and 'png' formats are allowed.";
                     res.render('add-player.ejs', {
-                        message: message,
+                        message,
                         title: 'Welcome to Socka | Add a new player'
                     });
                 }
             }
         });
-    },
-    editPlayerPage: (req, res) => {
+    }
+
+    exports.editPlayerPage = (req, res) => {
         const playerId = req.params.id;
         const query = "SELECT * FROM `players` WHERE id='" + playerId + "';";
         db.query(query, (err, result) => {
@@ -71,8 +72,9 @@ module.exports = {
                 message: ''
             });
         });
-    },
-    editPlayer: (req, res) => {
+    }
+
+    exports.editPlayer = (req, res) => {
         const playerId = req.params.id;
         const first_name = req.body.first_name;
         const last_name = req.body.last_name;
@@ -85,8 +87,9 @@ module.exports = {
             }
             res.redirect('/');
         });
-    },
-    deletePlayer: (req, res) => {
+    }
+
+    exports.deletePlayer = (req, res) => {
         const playerId = req.params.id;
         const getImageQuery = "SELECT image from `players` WHERE id = '" + playerId + "';";
         const deleteUserQuery = "DELETE from `players` WHERE id = '" + playerId + "';";
@@ -108,4 +111,3 @@ module.exports = {
             });
         });
     }
-};
